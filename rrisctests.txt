@@ -1,0 +1,65 @@
+### while a == b
+L: start
+...
+beq a,b,start
+nop
+nop
+nop
+
+### if a == b ... else ...
+bne a,b,Lelse
+...
+j Lend
+L:else
+...
+L:end
+
+### x = a op b
+lw x2,mema(xFrame)
+lw x3,memb(xFrame)
+nop
+nop
+nop
+add x2,x2,x3
+nop
+nop
+nop
+sw x2,memx(xFrame)
+nop
+nop
+nop
+
+
+### call func(a, b)
+mv x31,x2 # save pc
+nop
+nop
+nop
+sw x2,0(xStack) # return adress
+# save parameters
+sw a,1(xStack)
+sw b,2(xStack)
+mv xFrame, xStack # put xFrame just above xStack
+nop
+nop
+nop
+addrame,xFrame,1
+add xStack,xStack,LOCALSSIZE+PARAMSIZE+1
+nop
+nop
+nop
+
+### return
+lw x2,-1(xFrame)
+nop
+nop
+nop
+sub x2,x2,xPC
+nop
+nop
+nop
+subi x2,x2,7 # account for all of these nops
+nop
+nop
+nop
+jr x2

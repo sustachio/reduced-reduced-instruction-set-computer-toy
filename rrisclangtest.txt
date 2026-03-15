@@ -1,0 +1,20 @@
+
+INIT a
+INIT b
+INIT c
+INIT x
+
+LET a = 1
+LET b = a
+
+
+WHILE b < 6
+	MATH b = ADD b 1
+	MATH a = ADD b 2
+WEND
+
+#WHILE a cond b
+#END
+#IF a cond b THEN
+#ELSE
+#END
