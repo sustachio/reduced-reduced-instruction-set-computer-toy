@@ -115,7 +115,7 @@ class CodeWritter:
         if command in ["add", "sub", "or", "and"]:
             self.add_asm(f"lw  x2,-2(x{SP})")
             self.add_asm(f"lw  x3,-1(x{SP})")
-            self.add_asm(f"{command} x2,x3,x2")
+            self.add_asm(f"{command} x2,x2,x3")
             self.add_asm(f"sw  x2,-2(x{SP})")
             self.add_asm(f"addi x{SP},x{SP},-1")
         if command in ["not", "neg"]:
@@ -146,10 +146,7 @@ class CodeWritter:
             self.add_asm("li x3,16")
             address = f"{index}(x3)"
         elif segment == "temp":
-            self.add_asm("li x3,5")
-            address = f"{index}(x3)"
-        elif segment == "pointer":
-            self.add_asm("li x3,3")
+            self.add_asm("li x3,4")
             address = f"{index}(x3)"
 
         # frame fields
@@ -162,11 +159,16 @@ class CodeWritter:
         elif segment == "that":
             address = f"{index}(x{THAT})"
         elif segment == "constant": pass
+        elif segment == "pointer": pass
         else:
             print(f"weewooweewoo can't find adress to push/pop for segment {segment}")
 
         if command == "push":
-            if segment == "constant":
+            if segment == "pointer" and index == 0:
+                self.add_asm(f"li x2,x{THIS}")
+            elif segment == "pointer" and index == 1:
+                self.add_asm(f"li x2,x{THAT}")
+            elif segment == "constant":
                 self.add_asm(f"li x2,{index}")
             else:
                 self.add_asm(f"lw x2,{address}")
@@ -185,11 +187,11 @@ class CodeWritter:
 
     def WriteLabel(self, name):
         self.add_asm(f"# label {name}")
-        self.add_asm(f"L: lab{self.current_file}_{name}")
+        self.add_asm(f"L: label_{self.current_file}_{name}")
 
     def WriteGoto(self, name):
         self.add_asm(f"# goto {name}")
-        self.add_asm(f"j Llab{self.current_file}_{name}")
+        self.add_asm(f"j Llabel_{self.current_file}_{name}")
         self.add_asm("nop")
         self.add_asm("nop")
         self.add_asm("nop")
@@ -199,10 +201,70 @@ class CodeWritter:
         self.add_asm(f"lw x2,-1({SP})")
         self.add_asm(f"addi {SP},{SP},-1")
         self.add_asm(f"li x3,-1")
-        self.add_asm(f"beq x2,x3,Llab{self.current_file}_{name}")
+        self.add_asm(f"beq x2,x3,Llabel_{self.current_file}_{name}")
         self.add_asm("nop")
         self.add_asm("nop")
         self.add_asm("nop")
+
+    def WriteCall(self, name, n_args):
+        self.add_asm(f"# call {name} args {n_args}")
+
+        # save state to stack
+        self.add_asm(f"addi x2,x{PC},17") ## breaks with speculative execution
+        self.add_asm(f"sw x2,0(x{SP})") # return addr
+        self.add_asm(f"addi x{SP},x{SP},1")
+        self.add_asm(f"sw x{LCL},0(x{SP})") # LCL
+        self.add_asm(f"addi x{SP},x{SP},1")
+        self.add_asm(f"sw x{ARG},0(x{SP})") # ARG
+        self.add_asm(f"addi x{SP},x{SP},1")
+        self.add_asm(f"sw x{THIS},0(x{SP})") # THIS
+        self.add_asm(f"addi x{SP},x{SP},1")
+        self.add_asm(f"sw x{THAT},0(x{SP})") # THAT
+        self.add_asm(f"addi x{SP},x{SP},1")
+
+        # repostion args
+        self.add_asm(f"addi x{ARG},x{SP},{-5-n_args}")
+        self.add_asm(f"mv x{LCL},x{SP}")
+
+        # jump to
+        self.add_asm(f"j Lfunc_{self.current_file}_{name}")
+        self.add_asm("nop")
+        self.add_asm("nop")
+        self.add_asm("nop")
+
+    def WriteFunction(self, name, n_vars):
+        self.add_asm(f"# function {name} vars {n_vars}")
+        self.add_asm(f"L: func_{self.current_file}_{name}")
+
+        # initialize locals, also move stack pointer past
+        for i in range(n_vars):
+            self.add_asm(f"sw x0,0(x{SP})")
+            self.add_asm(f"addi x{SP},x{SP},1")
+
+    def WriteReturn(self):
+        self.add_asm("# return")
+
+        self.add_asm(f"lw x3,-5(x{LCL})") # save return addr
+
+        # write result and move stack back
+        self.add_asm(f"lw x2,-1(x{SP})")
+        self.add_asm(f"sw x2,0(x{ARG})")
+        self.add_asm(f"addi x{SP},x{ARG},1")
+
+        # restore segment pointers
+        self.add_asm(f"lw x{THAT},-1(x{LCL})")
+        self.add_asm(f"lw x{THIS},-2(x{LCL})")
+        self.add_asm(f"lw x{ARG},-3(x{LCL})")
+        self.add_asm(f"lw x{LCL},-4(x{LCL})")
+
+        # return
+        self.add_asm(f"jr x3")
+        self.add_asm("nop")
+        self.add_asm("nop")
+        self.add_asm("nop")
+
+
+
 
 class VMTranslator:
     def __init__(self, file):
@@ -216,24 +278,44 @@ class VMTranslator:
 
             if (self.parser.command_type() == self.parser.C_MATH):
                 self.codewriter.WriteMath(self.parser.arg1())
+
             elif (self.parser.command_type() == self.parser.C_PUSH):
                 self.codewriter.WritePushPop("push", self.parser.arg1(), self.parser.arg2())
+
             elif (self.parser.command_type() == self.parser.C_POP):
                 self.codewriter.WritePushPop("pop", self.parser.arg1(), self.parser.arg2())
+
             elif (self.parser.command_type() == self.parser.C_GOTO):
                 self.codewriter.WriteGoto(self.parser.arg1())
+
             elif (self.parser.command_type() == self.parser.C_IF_GOTO):
                 self.codewriter.WriteIfGoto(self.parser.arg1())
+
             elif (self.parser.command_type() == self.parser.C_LABEL):
                 self.codewriter.WriteLabel(self.parser.arg1())
+
+            elif (self.parser.command_type() == self.parser.C_CALL):
+                self.codewriter.WriteCall(self.parser.arg1(), self.parser.arg2())
+
+            elif (self.parser.command_type() == self.parser.C_FUNCTION):
+                self.codewriter.WriteFunction(self.parser.arg1(), self.parser.arg2())
+
+            elif (self.parser.command_type() == self.parser.C_RETURN):
+                self.codewriter.WriteReturn()
+
             else:
                 print(f"byte code instruction {self.parser.current_instruction} not found")
 
 
     def print_output(self):
         print("assembly:")
+        pc = 0
         for i in self.codewriter.assembly_instructions:
-            print("\t"+i)
+            if not i.startswith("L:") and not i.startswith("#"):
+                print(f"\t{pc:08X}: "+i)
+                pc += 1
+            else:
+                print(f"\t"+i)
 
         print("machine:")
         a = Assembler(self.codewriter.assembly_instructions)
@@ -248,7 +330,7 @@ class VMTranslator:
 
         return res
 
-a = VMTranslator("rrisclangtest.txt")
+a = VMTranslator("programs/vmtesting.vm")
 a.translate()
 a.print_output()
 

@@ -99,6 +99,15 @@ class Assembler:
                     self.pc += 1
         self.pc = 0
 
+    # allows to find labels
+    def parse_imm(self, imm):
+        if imm.startswith("LA"): # label absolute
+            if debug: print(f"\tDEBUG: parsed absolute label {imm}")
+            return self.labels[imm[2:]]
+        if imm.startswith("L"):
+            if debug: print(f"\tDEBUG: parsed label {imm}")
+            return self.labels[imm[1:]]-self.pc
+        return imm
 
     def assemble_line(self, line):
         if debug: print(f"\t\tDEBUG PC {self.pc+1}: " + line)
@@ -131,14 +140,14 @@ class Assembler:
 
         # rd, rs1, imm
         elif tokens[0] in ["addi", "andi", "ori", "slli", "srli", "srai"]:
-            return self.instruction(tokens[0], rd=tokens[1], rs1=tokens[2], imm=tokens[3])
+            return self.instruction(tokens[0], rd=tokens[1], rs1=tokens[2], imm=self.parse_imm(tokens[3]))
 
         # rd, rs1, rs2
         elif tokens[0] in ["add", "sub", "and", "or", "sll", "srl", "sra"]:
             return self.instruction(tokens[0], rd=tokens[1], rs1=tokens[2], rs2=tokens[3])
 
         # rd, imm 
-        elif tokens[0] == "li":   return self.instruction("li",   rd=tokens[1], imm=tokens[2])
+        elif tokens[0] == "li":   return self.instruction("li",   rd=tokens[1], imm=self.parse_imm(tokens[2]))
 
         # rd, rs1
         elif tokens[0] in ["mv", "not", "neg"]:
@@ -146,21 +155,15 @@ class Assembler:
 
         # immRD
         elif tokens[0] == "j":
-            if tokens[1].startswith("L"):
-                if debug: print(f"\tDEBUG: jump to label {tokens[1][1:]} at {self.pc} offset {self.labels[tokens[1][1:]]-self.pc}")
-                return self.instruction("j", imm=self.labels[tokens[1][1:]]-self.pc, immRD=True)
-            return self.instruction("j", imm=tokens[1], immRD=True)
+            return self.instruction("j", imm=self.parse_imm(tokens[1]), immRD=True)
 
         # rs1
         elif tokens[0] == "jr":
-            return self.instruction("j", rs1=tokens[1])
+            return self.instruction("jr", rs1=tokens[1])
 
         # rs1, rs2, immRD
         elif tokens[0] in ["beq", "bne", "blt", "bgt", "bge", "ble"]:
-            if tokens[3].startswith("L"):
-                if debug: print(f"\tDEBUG: branch to label {tokens[3][1:]} at {self.pc} offset {self.labels[tokens[3][1:]]-self.pc}")
-                return self.instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=self.labels[tokens[3][1:]]-self.pc, immRD=True)
-            return self.instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=tokens[3], immRD=True)
+            return self.instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=self.parse_imm(tokens[3]), immRD=True)
 
         print("could not find instruction " + tokens[0]) 
         self.pc -= 1

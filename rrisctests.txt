@@ -1,8 +1,0 @@
-nop
-nop
-beq x0,x2,4
-nop
-nop
-nop
-li x2,1
-li x2,2

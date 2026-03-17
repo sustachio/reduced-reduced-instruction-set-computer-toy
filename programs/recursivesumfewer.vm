@@ -1,0 +1,23 @@
+push constant 4
+call sum 1
+pop result 0
+
+label loop
+goto loop
+
+function sum 0
+push argument 0
+push argument 0
+push constant 0
+eq
+if-goto ret
+
+# argument
+push argument 0
+push constant 1
+sub
+call sum 1
+add
+
+label ret
+return
