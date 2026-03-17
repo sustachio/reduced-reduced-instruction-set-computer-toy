@@ -1,20 +1,43 @@
+# add, sub, neg
+# eq, gt, lt
+# and, or, not
 
-INIT a
-INIT b
-INIT c
-INIT x
+# 1
+# 1
 
-LET a = 1
-LET b = a
+# 2 add
 
+# 2
+# 1 push last
 
-WHILE b < 6
-	MATH b = ADD b 1
-	MATH a = ADD b 2
-WEND
+# 3 add
 
-#WHILE a cond b
-#END
-#IF a cond b THEN
-#ELSE
-#END
+# 3
+# 2 push last
+
+push constant 1
+push constant 1
+push constant 1
+add
+pop temp 0
+pop temp 1
+push temp 0
+push temp 1
+push temp 0
+add
+
+pop temp 0
+pop temp 1
+push temp 0
+push temp 1
+push temp 0
+add
+
+pop temp 0
+pop temp 1
+push temp 0
+push temp 1
+push temp 0
+add
+
+pop result 0

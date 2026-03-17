@@ -31,152 +31,160 @@ ops = {
     "not": 0b011111
 }
 
-def parse_registers(rd, rs1, rs2):
-    if rd == "":  rd  = "0"
-    if rs1 == "": rs1 = "0"
-    if rs2 == "": rs2 = "0"
+class Assembler:
+    def __init__(self, assembly_list):
+        self.assembly_list = assembly_list
+        self.labels = {}
+        self.pc = 0
 
-    if not rd[0].isdigit():  rd  = rd[1:]
-    if not rs1[0].isdigit(): rs1 = rs1[1:]
-    if not rs2[0].isdigit(): rs2 = rs2[1:]
+    def parse_registers(self, rd, rs1, rs2):
+        if rd == "":  rd  = "0"
+        if rs1 == "": rs1 = "0"
+        if rs2 == "": rs2 = "0"
 
-    rd  = int(rd)
-    rs1 = int(rs1)
-    rs2 = int(rs2)
+        if not rd[0].isdigit():  rd  = rd[1:]
+        if not rs1[0].isdigit(): rs1 = rs1[1:]
+        if not rs2[0].isdigit(): rs2 = rs2[1:]
 
-    return (rd, rs1, rs2)
+        rd  = int(rd)
+        rs1 = int(rs1)
+        rs2 = int(rs2)
+
+        return (rd, rs1, rs2)
+
+    # returns binary instruction
+    def instruction(self, op, rd="", rs1="", rs2="", imm="0", immRD=False):
+        rd, rs1, rs2 = self.parse_registers(rd, rs1, rs2)
+        imm = int(imm)
+
+        if debug:
+            print(f"\trd {rd}")
+            print(f"\trs2 {rs2}")
+            print(f"\trs1 {rs1}")
+            print(f"\timm {imm}")
+
+        op  = ops[op]
+        rd  = (rd  & 0b11111)<<16
+        rs1 = (rs1 & 0b11111)<<11
+        rs2 = (rs2 & 0b11111)<<6
+
+        if immRD:
+            imm = (imm & 0b1111_1111_1111_1111)<<16
+            rd = 0
+        else:
+            imm = (imm & 0b111_1111_1111)<<21
+        
+        instruction = imm+rd+op+rs1+rs2
+        return f"{instruction:08x}"
+
+    def parse_and_split_line(self, line):
+        line = line.strip()
+
+        if (comment := line.find("#")) != -1:
+            line = line[0:comment]
+
+        line = line.strip()
+        if line == "": return -1
+
+        line = line.replace(" ", ",")
+        
+        return [token for token in line.split(",") if token != '']
+
+    def alert_error(self, cond, string):
+        if cond:
+            raise ValueError(string)
+
+    def find_labels(self, lines):
+        self.pc = 0
+        for line in lines:
+            if not ((tokens := self.parse_and_split_line(line)) == -1):
+                if tokens[0] == "L:":
+                    self.labels[tokens[1]] = self.pc
+                    if debug: print(f"label {tokens[1]} at {self.pc}")
+                else:
+                    self.pc += 1
 
 
+    def assemble_line(self, line):
+        if debug: print(line)
 
-# returns binary instruction
-def instruction(op, rd="", rs1="", rs2="", imm="0", immRD=False):
-    rd, rs1, rs2 = parse_registers(rd, rs1, rs2)
-    imm = int(imm)
+        if (tokens := self.parse_and_split_line(line)) == -1: return -1
 
-    if debug:
-        print(f"\trd {rd}")
-        print(f"\trs2 {rs2}")
-        print(f"\trs1 {rs1}")
-        print(f"\timm {imm}")
+        # label
+        if tokens[0] == "L:":
+            return -1
 
-    op  = ops[op]
-    rd  = (rd  & 0b11111)<<16
-    rs1 = (rs1 & 0b11111)<<11
-    rs2 = (rs2 & 0b11111)<<6
+        self.pc += 1
 
-    if immRD:
-        imm = (imm & 0b1111_1111_1111_1111)<<16
-        rd = 0
-    else:
-        imm = (imm & 0b111_1111_1111)<<21
-    
-    instruction = imm+rd+op+rs1+rs2
-    return f"{instruction:08x}"
+        if tokens[0] == "nop": return self.instruction("nop")
 
-def line2tokens(line):
-    line = line.strip()
+        # rs2, imm(rs1)
+        elif tokens[0] == "sw":
+            self.alert_error(tokens[2].find(")") == -1 or tokens[2].find("(") == -1, "sw must have format rs2,imm(rs1)")
 
-    if (comment := line.find("#")) != -1:
-        line = line[0:comment]
+            imm = tokens[2][0:tokens[2].find("(")]
+            rs1 = tokens[2][tokens[2].find("(") + 1:tokens[2].find(")")]
+            return self.instruction("sw", rs2=tokens[1], rs1=rs1, imm=imm) 
 
-    line = line.strip()
-    if line == "": return -1
+        # rd, imm(rs1)
+        elif tokens[0] == "lw":
+            self.alert_error(tokens[2].find(")") == -1 or tokens[2].find("(") == -1, "lw must have format rd,imm(rs1)")
 
-    line = line.replace(" ", ",")
-    
-    return [token for token in line.split(",") if token != '']
+            imm = tokens[2][0:tokens[2].find("(")]
+            rs1 = tokens[2][tokens[2].find("(") + 1:tokens[2].find(")")]
+            return self.instruction("lw", rd=tokens[1], rs1=rs1, imm=imm) 
 
-def alert_error(cond, string):
-    if cond:
-        raise ValueError(string)
+        # rd, rs1, imm
+        elif tokens[0] in ["addi", "andi", "ori", "slli", "srli", "srai"]:
+            return self.instruction(tokens[0], rd=tokens[1], rs1=tokens[2], imm=tokens[3])
 
-labels = {}
+        # rd, rs1, rs2
+        elif tokens[0] in ["add", "sub", "and", "or", "sll", "srl", "sra"]:
+            return self.instruction(tokens[0], rd=tokens[1], rs1=tokens[2], rs2=tokens[3])
 
-def find_labels(lines):
-    pc = 0
-    for line in lines:
-        if not ((tokens := line2tokens(line)) == -1):
-            if tokens[0] == "L:":
-                labels[tokens[1]] = pc
-                if debug: print(f"label {tokens[1]} at {pc}")
-            else:
-                pc += 1
+        # rd, imm 
+        elif tokens[0] == "li":   return self.instruction("li",   rd=tokens[1], imm=tokens[2])
 
+        # rd, rs1
+        elif tokens[0] in ["mv", "not", "neg"]:
+            return self.instruction(tokens[0], rd=tokens[1], rs1=tokens[2])
 
-pc = 0
-def line2instruction(line):
-    global labels, pc
+        # immRD
+        elif tokens[0] == "j":
+            if tokens[1].startswith("L"):
+                return self.instruction("j", imm=self.labels[tokens[1][1:]]-self.pc, immRD=True)
+            return self.instruction("j", imm=tokens[1], immRD=True)
 
-    if debug: print(line)
+        # rs1
+        elif tokens[0] == "jr":
+            return self.instruction("j", rs1=tokens[1])
 
-    if (tokens := line2tokens(line)) == -1: return -1
+        # rs1, rs2, immRD
+        elif tokens[0] in ["beq", "bne", "blt", "bgt", "bge", "ble"]:
+            if tokens[3].startswith("L"):
+                if debug: print(f"branch to label {tokens[3][1:]} at {self.pc} offset {self.labels[tokens[3][1:]]-self.pc}")
+                return self.instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=self.labels[tokens[3][1:]]-self.pc, immRD=True)
+            return self.instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=tokens[3], immRD=True)
 
-    # label
-    if tokens[0] == "L:":
-        return -1
+        print("could not find instruction " + tokens[0]) 
+        self.pc -= 1
 
-    pc += 1
+    def assemble(self):
+        res = []
+        self.find_labels(self.assembly_list)
+        for line in self.assembly_list:
+            if ((ins := self.assemble_line(line)) != -1):
+                res.append(ins)
 
-    if tokens[0] == "nop": return instruction("nop")
+        return res
 
-    # rs2, imm(rs1)
-    elif tokens[0] == "sw":
-        alert_error(tokens[2].find(")") == -1 or tokens[2].find("(") == -1, "sw must have format rs2,imm(rs1)")
-
-        imm = tokens[2][0:tokens[2].find("(")]
-        rs1 = tokens[2][tokens[2].find("(") + 1:tokens[2].find(")")]
-        return instruction("sw", rs2=tokens[1], rs1=rs1, imm=imm) 
-
-    # rd, imm(rs1)
-    elif tokens[0] == "lw":
-        alert_error(tokens[2].find(")") == -1 or tokens[2].find("(") == -1, "lw must have format rd,imm(rs1)")
-
-        imm = tokens[2][0:tokens[2].find("(")]
-        rs1 = tokens[2][tokens[2].find("(") + 1:tokens[2].find(")")]
-        return instruction("lw", rd=tokens[1], rs1=rs1, imm=imm) 
-
-    # rd, rs1, imm
-    elif tokens[0] in ["addi", "andi", "ori", "slli", "srli", "srai"]:
-        return instruction(tokens[0], rd=tokens[1], rs1=tokens[2], imm=tokens[3])
-
-    # rd, rs1, rs2
-    elif tokens[0] in ["add", "sub", "and", "or", "sll", "srl", "sra"]:
-        return instruction(tokens[0], rd=tokens[1], rs1=tokens[2], rs2=tokens[3])
-
-    # rd, imm 
-    elif tokens[0] == "li":   return instruction("li",   rd=tokens[1], imm=tokens[2])
-
-    # rd, rs1
-    elif tokens[0] in ["mv", "not", "neg"]:
-        return instruction(tokens[0], rd=tokens[1], rs1=tokens[2])
-
-    # immRD
-    elif tokens[0] == "j":
-        if tokens[1].startswith("L"):
-            return instruction("j", imm=labels[tokens[1][1:]]-pc, immRD=True)
-        return instruction("j", imm=tokens[1], immRD=True)
-
-    # rs1
-    elif tokens[0] == "jr":
-        return instruction("j", rs1=tokens[1])
-
-    # rs1, rs2, immRD
-    elif tokens[0] in ["beq", "bne", "blt", "bgt", "bge", "ble"]:
-        if tokens[3].startswith("L"):
-            if debug: print(f"branch to label {tokens[3][1:]} at {pc} offset {labels[tokens[3][1:]]-pc}")
-            return instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=labels[tokens[3][1:]]-pc, immRD=True)
-        return instruction(tokens[0], rs1=tokens[1], rs2=tokens[2], imm=tokens[3], immRD=True)
-
-    print("could not find instruction " + tokens[0]) 
-    pc -= 1
 
 if __name__ == "__main__":
     with open("rrisctests.txt") as f:
         lines = f.readlines()
-        find_labels(lines)
-        for line in lines:
-            if ((ins := line2instruction(line)) != -1):
-                print(ins)
+        a = Assembler(lines)
+        for line in a.assemble():
+            print(line)
 
 
 
