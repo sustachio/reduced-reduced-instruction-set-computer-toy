@@ -1,4 +1,4 @@
-from rriscassempler import Assembler
+from assembler import Assembler
 
 def isnum(a):
     try:
@@ -13,8 +13,8 @@ PC = 31
 SP = 30
 LCL = 29
 ARG = 28
-THIS = 27
-THAT = 26
+PTR1 = 27
+PTR2 = 26
   
 class Parser():
     C_MATH     = 0
@@ -103,8 +103,8 @@ class CodeWritter:
         self.add_asm(f"li x{SP},256")
         self.add_asm(f"li x{LCL},500")
         self.add_asm(f"li x{ARG},600")
-        self.add_asm(f"li x{THIS},700")
-        self.add_asm(f"li x{THAT},800")
+        self.add_asm(f"li x{PTR1},700")
+        self.add_asm(f"li x{PTR2},800")
 
     def add_asm(self, text):
         self.assembly_instructions.append(text)
@@ -154,10 +154,10 @@ class CodeWritter:
             address = f"{index}(x{LCL})"
         elif segment == "argument":
             address = f"{index}(x{ARG})"
-        elif segment == "this":
-            address = f"{index}(x{THIS})"
-        elif segment == "that":
-            address = f"{index}(x{THAT})"
+        elif segment == "ptr1":
+            address = f"{index}(x{PTR1})"
+        elif segment == "ptr2":
+            address = f"{index}(x{PTR2})"
         elif segment == "constant": pass
         elif segment == "pointer": pass
         else:
@@ -165,9 +165,9 @@ class CodeWritter:
 
         if command == "push":
             if segment == "pointer" and index == 0:
-                self.add_asm(f"li x2,x{THIS}")
+                self.add_asm(f"li x2,x{PTR1}")
             elif segment == "pointer" and index == 1:
-                self.add_asm(f"li x2,x{THAT}")
+                self.add_asm(f"li x2,x{PTR2}")
             elif segment == "constant":
                 self.add_asm(f"li x2,{index}")
             else:
@@ -177,13 +177,18 @@ class CodeWritter:
             self.add_asm(f"addi x{SP},x{SP},1")
 
         elif command == "pop":
+            self.add_asm(f"lw x2,-1(x{SP})")
+            self.add_asm(f"addi x{SP},x{SP},-1")
+
             if segment == "constant":
                 raise ValueError("cant pop to a constant")
+            elif segment == "pointer" and index == 0:
+                self.add_asm(f"mv x{PTR1},x2")
+            elif segment == "pointer" and index == 1:
+                self.add_asm(f"mv x{PTR2},x2")
+            else:
+                self.add_asm(f"sw x2,{address}")
 
-            self.add_asm(f"lw x2,-1(x{SP})")
-            self.add_asm(f"sw x2,{address}")
-
-            self.add_asm(f"addi x{SP},x{SP},-1")
 
     def WriteLabel(self, name):
         self.add_asm(f"# label {name}")
@@ -217,9 +222,9 @@ class CodeWritter:
         self.add_asm(f"addi x{SP},x{SP},1")
         self.add_asm(f"sw x{ARG},0(x{SP})") # ARG
         self.add_asm(f"addi x{SP},x{SP},1")
-        self.add_asm(f"sw x{THIS},0(x{SP})") # THIS
+        self.add_asm(f"sw x{PTR1},0(x{SP})") # PTR1
         self.add_asm(f"addi x{SP},x{SP},1")
-        self.add_asm(f"sw x{THAT},0(x{SP})") # THAT
+        self.add_asm(f"sw x{PTR2},0(x{SP})") # PTR2
         self.add_asm(f"addi x{SP},x{SP},1")
 
         # repostion args
@@ -241,6 +246,10 @@ class CodeWritter:
             self.add_asm(f"sw x0,0(x{SP})")
             self.add_asm(f"addi x{SP},x{SP},1")
 
+    # TODO: implement ability to return multiple values (for structs)
+    # save all segment pointers to temporary registers
+    # `return 3`
+    # copies last three values of stack back, starting with earlierst in mem so that doesn't get overwritten
     def WriteReturn(self):
         self.add_asm("# return")
 
@@ -252,8 +261,8 @@ class CodeWritter:
         self.add_asm(f"addi x{SP},x{ARG},1")
 
         # restore segment pointers
-        self.add_asm(f"lw x{THAT},-1(x{LCL})")
-        self.add_asm(f"lw x{THIS},-2(x{LCL})")
+        self.add_asm(f"lw x{PTR2},-1(x{LCL})")
+        self.add_asm(f"lw x{PTR1},-2(x{LCL})")
         self.add_asm(f"lw x{ARG},-3(x{LCL})")
         self.add_asm(f"lw x{LCL},-4(x{LCL})")
 
@@ -330,12 +339,13 @@ class VMTranslator:
 
         return res
 
-a = VMTranslator("programs/vmtesting.vm")
-a.translate()
-a.print_output()
+if __name__ == "__main__":
+    a = VMTranslator("programs/vmtesting.vm")
+    a.translate()
+    a.print_output()
 
-with open("PROGRAM.txt", "w") as f:
-    f.write(a.output())
+    with open("PROGRAM.txt", "w") as f:
+        f.write(a.output())
 
 
 

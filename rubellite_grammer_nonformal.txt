@@ -1,0 +1,119 @@
+# this isn't by any means formal but just to help me write the code
+
+# TOKENS/BASE LEVEL
+keyword -> 'end' | 'class' | 'def' | 'staticdef' | 'field' | 'static' | 'local' | 'int' | 'char' | 'bool' | 'void' | 'true' | 'false' | 'null' | 'self' | 'let' | 'call' | 'if' | 'then' | 'else' | 'while' | 'return'
+keyword_constant -> 'true' | 'false' | 'self' | 'null'
+string_constant -> '"' charecters '"'
+symbol -> '(' | ')' | ',' | ';' | '$' | '.' | '+' | '-' | '*' | '/' | '&' | '|' | '>' | '<' | '=' | '~' | '==' | '[' | ']'
+int_constant -> digit+
+identifier -> (letter | '_')(letter | '_' | digit)+
+
+# GRAMMER
+program -> class_dec*
+
+class_dec -> 'class' class_name
+	class_var_dec*
+	class_func_dec*
+end
+
+
+class_var_dec -> (static | field) type var_name (',' var_name)*;
+
+class_func_dec -> (def | staticdef) ('void' | type) func_name '(' parameter_list ')'
+	local_dec*
+	statement
+end
+
+type -> 'int' | 'char' | 'bool' | class_name
+
+parameter_list -> (type var_name (, type var_name)*)?
+
+local_dec -> 'local' type var_name (',' var_name)* ';'
+statements -> statement*
+
+statement -> (call_statement | let_statement | if_statement | while_statement | return_statement)
+
+call_statement -> 'call' func_call ';'
+let_statement -> 'let' ('.' | '$')? var_name ('[' expression ']')? '=' expression ';'
+if_statement -> 'if' '(' expression ')' 'then' statements ('else' statements)? 'end'
+while_statement -> 'while' '(' expression ')' 'do' statements 'end'
+return_statement -> 'return' expression? ';'
+
+
+func_call -> self_func_call | other_func_call
+self_func_call  -> ('.' | '$') func_name '(' expression_list ')'
+other_func_call ->  ((var_name '.') | (class_name '$')) func_name '(' expression_list ')'
+
+expression_list -> expression (',' expression)*
+
+expression -> term (op term)*
+
+term -> int_constant | string_constant | keyword_constant | var_name | var_name '[' expression ']' | func_call | '(' expression ')' | unary_op term
+
+op -> '+' | '-' | '/' | '*' | '&' | '|' | '<' | '>' | '=='
+unary_op = '-' | '~'
+
+class_name ->identifier
+var_name -> identifier
+func_name -> identifier
+
+# OVERVIEW to help write code
+x program
+	x class_dec
+		x class_var_dec
+		x class_func_dec
+			x local_dec
+			x statement
+				x call_statement
+					x func_call
+						x expression
+							x term
+				x let_statement
+				x while_statement
+				x return_statement
+				x if_statement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+whitespace becuase I like to scroll down and have text near top
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if you're reading this I appreciate you reading my code and hope you have a wonderful day ^_^
+
+
+

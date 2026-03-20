@@ -6571,6 +6571,7 @@
     </comp>
     <comp lib="0" loc="(240,350)" name="Pin">
       <a name="appearance" val="NewPins"/>
+      <a name="label" val="Input_1"/>
     </comp>
     <comp lib="0" loc="(380,460)" name="Splitter">
       <a name="appear" val="right"/>
@@ -6711,7 +6712,12 @@
     <a name="appearance" val="logisim_evolution"/>
     <a name="circuit" val="rrisc"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
-    <a name="simulationFrequency" val="256.0"/>
+    <a name="downloadFrequency" val="255.9993446416777"/>
+    <a name="simulationFrequency" val="1.0"/>
+    <boardmap boardname="ALCHITRY_AU_IO">
+      <mc key="/Input_1" pmap="154_325_0"/>
+      <mc key="/Input_2" pmap="154_325_1"/>
+    </boardmap>
     <comp lib="0" loc="(100,660)" name="Power"/>
     <comp lib="0" loc="(100,680)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -6739,6 +6745,7 @@
     </comp>
     <comp lib="0" loc="(180,230)" name="Pin">
       <a name="appearance" val="classic"/>
+      <a name="label" val="Input_1"/>
     </comp>
     <comp lib="0" loc="(210,200)" name="Clock">
       <a name="appearance" val="classic"/>
@@ -6791,6 +6798,7 @@
     </comp>
     <comp lib="0" loc="(250,350)" name="Pin">
       <a name="appearance" val="classic"/>
+      <a name="label" val="Input_2"/>
     </comp>
     <comp lib="0" loc="(260,540)" name="Constant">
       <a name="width" val="32"/>
@@ -6895,23 +6903,25 @@
       <a name="addrWidth" val="20"/>
       <a name="appearance" val="logisim_evolution"/>
       <a name="dataWidth" val="32"/>
+      <a name="label" val="RAM_2"/>
       <a name="trigger" val="falling"/>
     </comp>
     <comp lib="5" loc="(300,680)" name="RAM">
       <a name="addrWidth" val="20"/>
       <a name="appearance" val="logisim_evolution"/>
       <a name="dataWidth" val="32"/>
+      <a name="label" val="RAM_1"/>
       <a name="labelvisible" val="true"/>
       <a name="trigger" val="falling"/>
     </comp>
     <comp lib="9" loc="(140,595)" name="Text">
       <a name="text" val="PC"/>
     </comp>
-    <comp lib="9" loc="(1867,319)" name="Text">
+    <comp lib="9" loc="(1865,315)" name="Text">
       <a name="font" val="SansSerif bold 36"/>
       <a name="text" val="EX"/>
     </comp>
-    <comp lib="9" loc="(2621,328)" name="Text">
+    <comp lib="9" loc="(2620,325)" name="Text">
       <a name="font" val="SansSerif bold 36"/>
       <a name="text" val="MEM"/>
     </comp>
@@ -6919,27 +6929,66 @@
       <a name="font" val="SansSerif bold 36"/>
       <a name="text" val="WB"/>
     </comp>
-    <comp lib="9" loc="(391,354)" name="Text">
+    <comp lib="9" loc="(390,350)" name="Text">
       <a name="font" val="SansSerif bold 36"/>
       <a name="text" val="IF"/>
     </comp>
-    <comp lib="9" loc="(857,325)" name="Text">
+    <comp lib="9" loc="(855,325)" name="Text">
       <a name="font" val="SansSerif bold 36"/>
       <a name="text" val="ID"/>
     </comp>
-    <comp loc="(1080,920)" name="reliesonLoadchecker"/>
-    <comp loc="(1090,560)" name="Regbank32OfEm"/>
-    <comp loc="(1090,830)" name="immRDmaker"/>
-    <comp loc="(1280,500)" name="ID2EXbuf"/>
-    <comp loc="(1720,460)" name="Ainpmux"/>
-    <comp loc="(1720,730)" name="Binpmux"/>
-    <comp loc="(2080,580)" name="riskALU"/>
-    <comp loc="(2140,400)" name="branchCondition"/>
-    <comp loc="(2320,490)" name="EX2MEMbuf"/>
-    <comp loc="(2510,870)" name="memreadorwrite"/>
-    <comp loc="(2890,490)" name="MEM2WBbuf"/>
-    <comp loc="(3050,650)" name="memreadorwrite"/>
-    <comp loc="(680,500)" name="IF2IDbuf"/>
+    <comp loc="(1080,920)" name="reliesonLoadchecker">
+      <a name="label" val="reliesonLoadchecker_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(1090,560)" name="Regbank32OfEm">
+      <a name="label" val="Regbank32OfEm_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(1090,830)" name="immRDmaker">
+      <a name="label" val="immRDmaker_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(1280,500)" name="ID2EXbuf">
+      <a name="label" val="ID2EXbuf_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(1720,460)" name="Ainpmux">
+      <a name="label" val="Ainpmux_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(1720,730)" name="Binpmux">
+      <a name="label" val="Binpmux_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(2080,580)" name="riskALU">
+      <a name="label" val="riskALU_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(2140,400)" name="branchCondition">
+      <a name="label" val="branchCondition_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(2320,490)" name="EX2MEMbuf">
+      <a name="label" val="EX2MEMbuf_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(2510,870)" name="memreadorwrite">
+      <a name="label" val="memreadorwrite_2"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(2890,490)" name="MEM2WBbuf">
+      <a name="label" val="MEM2WBbuf_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(3050,650)" name="memreadorwrite">
+      <a name="label" val="memreadorwrite_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
+    <comp loc="(680,500)" name="IF2IDbuf">
+      <a name="label" val="IF2IDbuf_1"/>
+      <a name="labelvisible" val="false"/>
+    </comp>
     <wire from="(100,660)" to="(110,660)"/>
     <wire from="(100,680)" to="(110,680)"/>
     <wire from="(1080,920)" to="(1170,920)"/>
@@ -9134,9 +9183,15 @@
     <comp lib="9" loc="(1475,295)" name="Text">
       <a name="text" val="x1 constant 1"/>
     </comp>
-    <comp loc="(240,980)" name="IRsplitter"/>
-    <comp loc="(390,970)" name="SuperIRdecoder"/>
-    <comp loc="(590,520)" name="IRsplitter"/>
+    <comp loc="(240,980)" name="IRsplitter">
+      <a name="label" val="IRsplitter_2"/>
+    </comp>
+    <comp loc="(390,970)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
+    <comp loc="(590,520)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
     <wire from="(1220,1060)" to="(1250,1060)"/>
     <wire from="(1220,1100)" to="(1250,1100)"/>
     <wire from="(1220,1200)" to="(1250,1200)"/>
@@ -9973,8 +10028,12 @@
     <comp lib="1" loc="(550,750)" name="OR Gate">
       <a name="inputs" val="8"/>
     </comp>
-    <comp loc="(320,560)" name="IRsplitter"/>
-    <comp loc="(440,550)" name="SuperIRdecoder"/>
+    <comp loc="(320,560)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(440,550)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(230,560)" to="(250,560)"/>
     <wire from="(320,560)" to="(360,560)"/>
     <wire from="(440,710)" to="(500,710)"/>
@@ -10058,8 +10117,12 @@
     <comp lib="9" loc="(555,185)" name="Text">
       <a name="text" val="need immRD"/>
     </comp>
-    <comp loc="(300,350)" name="IRsplitter"/>
-    <comp loc="(490,50)" name="SuperIRdecoder"/>
+    <comp loc="(300,350)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(490,50)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(180,350)" to="(230,350)"/>
     <wire from="(300,350)" to="(370,350)"/>
     <wire from="(300,360)" to="(410,360)"/>
@@ -10140,8 +10203,12 @@
     <comp lib="1" loc="(700,700)" name="OR Gate">
       <a name="inputs" val="16"/>
     </comp>
-    <comp loc="(320,560)" name="IRsplitter"/>
-    <comp loc="(440,550)" name="SuperIRdecoder"/>
+    <comp loc="(320,560)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(440,550)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(230,560)" to="(250,560)"/>
     <wire from="(320,560)" to="(360,560)"/>
     <wire from="(440,560)" to="(640,560)"/>
@@ -10580,7 +10647,7 @@
     <comp lib="3" loc="(910,1070)" name="Adder">
       <a name="width" val="32"/>
     </comp>
-    <comp lib="9" loc="(1016,1967)" name="Text">
+    <comp lib="9" loc="(1015,1965)" name="Text">
       <a name="text" val="mv"/>
     </comp>
     <comp lib="9" loc="(1055,1860)" name="Text">
@@ -10611,9 +10678,15 @@
     <comp lib="9" loc="(690,1355)" name="Text">
       <a name="text" val="ori,or"/>
     </comp>
-    <comp loc="(540,390)" name="IRsplitter"/>
-    <comp loc="(650,380)" name="SuperIRdecoder"/>
-    <comp loc="(870,810)" name="AddSub32Bit"/>
+    <comp loc="(540,390)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(650,380)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
+    <comp loc="(870,810)" name="AddSub32Bit">
+      <a name="label" val="AddSub32Bit_1"/>
+    </comp>
     <wire from="(1000,1020)" to="(1190,1020)"/>
     <wire from="(1000,920)" to="(1000,1020)"/>
     <wire from="(1000,920)" to="(1130,920)"/>
@@ -10838,8 +10911,12 @@
     <comp lib="3" loc="(740,420)" name="Comparator">
       <a name="width" val="32"/>
     </comp>
-    <comp loc="(360,100)" name="IRsplitter"/>
-    <comp loc="(470,90)" name="SuperIRdecoder"/>
+    <comp loc="(360,100)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(470,90)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(1000,380)" to="(1000,410)"/>
     <wire from="(1000,380)" to="(1030,380)"/>
     <wire from="(1010,350)" to="(1010,360)"/>
@@ -10942,8 +11019,12 @@
       <a name="label" val="OE"/>
       <a name="type" val="output"/>
     </comp>
-    <comp loc="(410,350)" name="IRsplitter"/>
-    <comp loc="(540,340)" name="SuperIRdecoder"/>
+    <comp loc="(410,350)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(540,340)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(310,350)" to="(340,350)"/>
     <wire from="(410,350)" to="(460,350)"/>
     <wire from="(540,350)" to="(570,350)"/>
@@ -11055,19 +11136,33 @@
     <comp lib="3" loc="(880,1120)" name="Comparator">
       <a name="width" val="5"/>
     </comp>
-    <comp lib="9" loc="(831,696)" name="Text">
+    <comp lib="9" loc="(830,695)" name="Text">
       <a name="text" val="needs rd early"/>
     </comp>
-    <comp lib="9" loc="(847,1084)" name="Text">
+    <comp lib="9" loc="(845,1080)" name="Text">
       <a name="text" val="needs rd early"/>
     </comp>
-    <comp loc="(360,400)" name="IRsplitter"/>
-    <comp loc="(380,730)" name="IRsplitter"/>
-    <comp loc="(390,1120)" name="IRsplitter"/>
-    <comp loc="(620,400)" name="opcodeNeedsRS1check"/>
-    <comp loc="(670,1170)" name="writestoRDcheck"/>
-    <comp loc="(670,780)" name="writestoRDcheck"/>
-    <comp loc="(840,600)" name="IRbranchchecker"/>
+    <comp loc="(360,400)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(380,730)" name="IRsplitter">
+      <a name="label" val="IRsplitter_2"/>
+    </comp>
+    <comp loc="(390,1120)" name="IRsplitter">
+      <a name="label" val="IRsplitter_3"/>
+    </comp>
+    <comp loc="(620,400)" name="opcodeNeedsRS1check">
+      <a name="label" val="opcodeNeedsRS1check_1"/>
+    </comp>
+    <comp loc="(670,1170)" name="writestoRDcheck">
+      <a name="label" val="writestoRDcheck_2"/>
+    </comp>
+    <comp loc="(670,780)" name="writestoRDcheck">
+      <a name="label" val="writestoRDcheck_1"/>
+    </comp>
+    <comp loc="(840,600)" name="IRbranchchecker">
+      <a name="label" val="IRbranchchecker_1"/>
+    </comp>
     <wire from="(1000,730)" to="(1290,730)"/>
     <wire from="(1010,1100)" to="(1290,1100)"/>
     <wire from="(1200,1020)" to="(1280,1020)"/>
@@ -11242,19 +11337,33 @@
     <comp lib="3" loc="(880,1120)" name="Comparator">
       <a name="width" val="5"/>
     </comp>
-    <comp lib="9" loc="(831,696)" name="Text">
+    <comp lib="9" loc="(830,695)" name="Text">
       <a name="text" val="needs rd early"/>
     </comp>
-    <comp lib="9" loc="(847,1084)" name="Text">
+    <comp lib="9" loc="(845,1080)" name="Text">
       <a name="text" val="needs rd early"/>
     </comp>
-    <comp loc="(360,400)" name="IRsplitter"/>
-    <comp loc="(370,730)" name="IRsplitter"/>
-    <comp loc="(390,1120)" name="IRsplitter"/>
-    <comp loc="(590,780)" name="writestoRDcheck"/>
-    <comp loc="(610,1170)" name="writestoRDcheck"/>
-    <comp loc="(620,400)" name="opcodeNeedsRS2check"/>
-    <comp loc="(840,600)" name="IRimmchecker"/>
+    <comp loc="(360,400)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(370,730)" name="IRsplitter">
+      <a name="label" val="IRsplitter_2"/>
+    </comp>
+    <comp loc="(390,1120)" name="IRsplitter">
+      <a name="label" val="IRsplitter_3"/>
+    </comp>
+    <comp loc="(590,780)" name="writestoRDcheck">
+      <a name="label" val="writestoRDcheck_1"/>
+    </comp>
+    <comp loc="(610,1170)" name="writestoRDcheck">
+      <a name="label" val="writestoRDcheck_2"/>
+    </comp>
+    <comp loc="(620,400)" name="opcodeNeedsRS2check">
+      <a name="label" val="opcodeNeedsRS2check_1"/>
+    </comp>
+    <comp loc="(840,600)" name="IRimmchecker">
+      <a name="label" val="IRimmchecker_1"/>
+    </comp>
     <wire from="(1000,730)" to="(1290,730)"/>
     <wire from="(1010,1100)" to="(1290,1100)"/>
     <wire from="(1200,1020)" to="(1280,1020)"/>
@@ -11352,10 +11461,12 @@
     <comp lib="1" loc="(590,310)" name="OR Gate">
       <a name="inputs" val="19"/>
     </comp>
-    <comp lib="9" loc="(606,286)" name="Text">
+    <comp lib="9" loc="(605,285)" name="Text">
       <a name="text" val="wrote to rd"/>
     </comp>
-    <comp loc="(420,210)" name="SuperIRdecoder"/>
+    <comp loc="(420,210)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(140,170)" to="(300,170)"/>
     <wire from="(300,170)" to="(300,220)"/>
     <wire from="(300,220)" to="(340,220)"/>
@@ -11438,11 +11549,21 @@
     <comp lib="3" loc="(600,710)" name="Comparator">
       <a name="width" val="5"/>
     </comp>
-    <comp loc="(360,600)" name="IRsplitter"/>
-    <comp loc="(420,390)" name="IRsplitter"/>
-    <comp loc="(650,390)" name="writestoRDcheck"/>
-    <comp loc="(660,570)" name="opcodeNeedsRS1check"/>
-    <comp loc="(660,670)" name="opcodeNeedsRS2check"/>
+    <comp loc="(360,600)" name="IRsplitter">
+      <a name="label" val="IRsplitter_2"/>
+    </comp>
+    <comp loc="(420,390)" name="IRsplitter">
+      <a name="label" val="IRsplitter_1"/>
+    </comp>
+    <comp loc="(650,390)" name="writestoRDcheck">
+      <a name="label" val="writestoRDcheck_1"/>
+    </comp>
+    <comp loc="(660,570)" name="opcodeNeedsRS1check">
+      <a name="label" val="opcodeNeedsRS1check_1"/>
+    </comp>
+    <comp loc="(660,670)" name="opcodeNeedsRS2check">
+      <a name="label" val="opcodeNeedsRS2check_1"/>
+    </comp>
     <wire from="(270,600)" to="(290,600)"/>
     <wire from="(330,390)" to="(350,390)"/>
     <wire from="(360,600)" to="(420,600)"/>
@@ -11506,10 +11627,12 @@
     <comp lib="1" loc="(730,190)" name="OR Gate">
       <a name="inputs" val="25"/>
     </comp>
-    <comp lib="9" loc="(772,176)" name="Text">
+    <comp lib="9" loc="(770,175)" name="Text">
       <a name="text" val="needs rs1"/>
     </comp>
-    <comp loc="(560,70)" name="SuperIRdecoder"/>
+    <comp loc="(560,70)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(460,80)" to="(480,80)"/>
     <wire from="(560,100)" to="(680,100)"/>
     <wire from="(560,110)" to="(680,110)"/>
@@ -11585,10 +11708,12 @@
     <comp lib="1" loc="(730,210)" name="OR Gate">
       <a name="inputs" val="15"/>
     </comp>
-    <comp lib="9" loc="(772,176)" name="Text">
+    <comp lib="9" loc="(770,175)" name="Text">
       <a name="text" val="needs rs2"/>
     </comp>
-    <comp loc="(560,70)" name="SuperIRdecoder"/>
+    <comp loc="(560,70)" name="SuperIRdecoder">
+      <a name="label" val="SuperIRdecoder_1"/>
+    </comp>
     <wire from="(450,80)" to="(480,80)"/>
     <wire from="(560,100)" to="(650,100)"/>
     <wire from="(560,110)" to="(640,110)"/>

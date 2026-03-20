@@ -1,0 +1,83 @@
+# $ = static var/static function
+# . = field/method
+
+class Main
+	staticdef void main(int ab, bool bc)
+		local int a;
+		let a = MyClass$new();   
+		call a.main(1, true, 2);
+		call MyClass$stat();    
+	end
+end
+
+class MyClass
+	static int r, count;	
+	field int b;
+	field String c;
+
+	def void init()
+		let $count = $count + ~1;
+		let .b = 3;
+		let .c = "abc";
+	end
+
+	def void main(int a,  int b, int c) 
+		local int e, f;
+		local bool g;
+
+		let g = b + .func2(c, b);
+
+		if (a == (b + c)) then
+			let e = f + .b + c + $t;
+		else
+			call $Other.pluh();
+			call .Other.pluh();
+			call Other.pluh();
+		end
+
+		let e = .b[3 * c];
+	end
+
+	def int func2(int a, int b) 
+		local int c;
+		let c = 0;
+		
+		while (-c < 2) do
+			let c = $r + 1 + .b;
+		end
+
+		return c;
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

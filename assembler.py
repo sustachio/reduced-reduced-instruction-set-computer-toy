@@ -179,7 +179,7 @@ class Assembler:
 
 
 if __name__ == "__main__":
-    with open("rrisctests.txt") as f:
+    with open("programs/fibandmove.asm") as f:
         lines = f.readlines()
         a = Assembler(lines)
         for line in a.assemble():
