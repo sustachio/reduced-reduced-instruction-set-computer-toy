@@ -31,6 +31,37 @@ ops = {
     "not": 0b011111
 }
 
+formats = {
+    "nop": "IMM_RD",
+    "sw": "IMM_RS1_RS2",
+    "li": "IMM_RD",
+    "mv": "IMM_RS1_RD",
+    "addi": "IMM_RS1_RD",
+    "add": "IMM_RD_RS1_RS2",
+    "sub": "IMM_RD_RS1_RS2",
+    "neg": "IMM_RS1_RD",
+    "andi": "IMM_RS1_RD",
+    "and": "IMM_RD_RS1_RS2",
+    "ori": "IMM_RS1_RD",
+    "or": "IMM_RD_RS1_RS2",
+    "slli": "IMM_RS1_RD",
+    "sll": "IMM_RD_RS1_RS2",
+    "srli": "IMM_RS1_RD",
+    "srl": "IMM_RD_RS1_RS2",
+    "srai": "IMM_RS1_RD",
+    "sra": "IMM_RD_RS1_RS2",
+    "j": "IMM_RD",
+    "beq": "IMM_RS1_RS2",
+    "bne": "IMM_RS1_RS2",
+    "blt": "IMM_RS1_RS2",
+    "bgt": "IMM_RS1_RS2",
+    "bge": "IMM_RS1_RS2",
+    "ble": "IMM_RS1_RS2",
+    "lw": "IMM_RS1_RD",
+    "jr": "IMM_RS1_RD",
+    "not": "IMM_RS1_RD"
+}
+
 class Assembler:
     def __init__(self, assembly_list):
         self.assembly_list = assembly_list
@@ -57,18 +88,45 @@ class Assembler:
         rd, rs1, rs2 = self.parse_registers(rd, rs1, rs2)
         imm = int(imm)
 
-        op  = ops[op]
-        rd  = (rd  & 0b11111)<<16
-        rs1 = (rs1 & 0b11111)<<11
-        rs2 = (rs2 & 0b11111)<<6
+        if not (op in ops):
+            raise Exception(f"ASSEMBLER ERROR: I don't know what instruction '{op}' is")
+        if not (op in formats):
+            raise Exception(f"ASSEMBLER ERROR: I don't know what format '{op}' has")
 
-        if immRD:
-            imm = (imm & 0b1111_1111_1111_1111)<<16
-            rd = 0
+        instruction = ops[op] # 32 bit instruction
+
+        rd  &= 0b11111
+        rs1 &= 0b11111
+        rs2 &= 0b11111
+
+        if formats[op] == "IMM_RD":
+            imm &= 0b111111111111111111111
+            instruction |= rd << 6
+            instruction |= imm << 11
+
+        elif formats[op] == "IMM_RS1_RS2":
+            imm &= 0b1111111111111111
+            instruction |= rs2 << 6
+            instruction |= rs1 << 11
+            instruction |= imm << 16
+
+        elif formats[op] == "IMM_RS1_RD":
+            imm &= 0b1111111111111111
+            instruction |= rd  << 6
+            instruction |= rs1 << 11
+            instruction |= imm << 16
+
+        elif formats[op] == "IMM_RD_RS1_RS2":
+            imm &= 0b1111111111111111
+            instruction |= rs2 << 6
+            instruction |= rs1 << 11
+            instruction |= rd  << 16
+            instruction |= rd  << 21
+
         else:
-            imm = (imm & 0b111_1111_1111)<<21
-        
-        instruction = imm+rd+op+rs1+rs2
+            raise Exception(f"ASSEMBLER ERROR: unknown format '{formats[op]}' for instruction '{op}'")
+
+
         return f"{instruction:08x}"
 
     def parse_and_split_line(self, line):
