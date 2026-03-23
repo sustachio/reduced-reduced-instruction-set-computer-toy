@@ -12,6 +12,7 @@ The processor was created in `Logisim` and is in the `rrisc` subcircuit of the `
 - 28 implemented opcodes (up to 64)
 - 4 instruction formats
 - Register forwarding/bypassing
+- Memory mapped IO (currently just a screen)
 
 Descriptions of op-codes and registers can be found in `ISA attempt rriscv.xlsx`. There are only two types of instrucions, being the one listed in that spreadsheet and one which merges the imm and rd fields into an immRD field which is just a longer immediate (this is subject to change, I will probably add more).
 
@@ -19,7 +20,7 @@ The assembler uses the same format for instruction parameters defined in the spr
 
 ## VM compiler features:
 
-- Push/pop operations
+- Push/pop operations to work on the stack
 - temp, static, result, local, argument, ptr1, and ptr2 segments in memory that push/pop can use
     - ptr1 and ptr2 segment adresses can be set with `pop pointer` `0`/`1` and allow for popping to arbitrary memory locations (heap eventually)
 - Labels, conditional label jumps
@@ -33,6 +34,7 @@ The assembler uses the same format for instruction parameters defined in the spr
 - If (else) statements, while statements
 - Expression parseing (no order of operations yet though)
 - Comments
+- Basic heap management (will be improved)
 
 _no AI generated code was used in this project as I enjoy my slightly poorly written code more_
 
@@ -51,3 +53,5 @@ Update #5: This took a lot longer than expected but I have began writing my own 
 Update #6: Compiler is working!! (as far as I know) It can compile really big programs without throwing error and was able to create a successful n-th term fibonacci calculator with three nested functions (`System$Ini()`, `Main$main()`, `Main$fib(int amount)`) and a while loop.
 
 Update #7: Reworked the ISA to allow for 4 different instruction formats so I can have longer immediates.
+
+Update #8: Implemented basic memory mapped IO and added a screen with a small demo.
