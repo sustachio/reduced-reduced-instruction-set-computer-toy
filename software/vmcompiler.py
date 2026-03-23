@@ -63,24 +63,26 @@ class VMParser():
             self.instructions.pop(0)
 
     def command_type(self):
-        if self.current_instruction[0] in ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]:
+        if self.current_instruction[0] in ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not", "sll", "srl", "sra"]:
             return self.C_MATH
-        if self.current_instruction[0] == "push":
+        elif self.current_instruction[0] == "push":
             return self.C_PUSH
-        if self.current_instruction[0] == "pop":
+        elif self.current_instruction[0] == "pop":
             return self.C_POP
-        if self.current_instruction[0] == "label":
+        elif self.current_instruction[0] == "label":
             return self.C_LABEL
-        if self.current_instruction[0] == "goto":
+        elif self.current_instruction[0] == "goto":
             return self.C_GOTO
-        if self.current_instruction[0] == "if-goto":
+        elif self.current_instruction[0] == "if-goto":
             return self.C_IF_GOTO
-        if self.current_instruction[0] == "function":
+        elif self.current_instruction[0] == "function":
             return self.C_FUNCTION
-        if self.current_instruction[0] == "call":
+        elif self.current_instruction[0] == "call":
             return self.C_CALL
-        if self.current_instruction[0] == "return":
+        elif self.current_instruction[0] == "return":
             return self.C_RETURN
+        else:
+            raise Exception(f"VM ERROR: I don't know the command {self.current_instruction[0]}")
 
     def arg1(self):
         if self.command_type() == self.C_MATH:
@@ -112,17 +114,17 @@ class CodeWritter:
 
     def WriteMath(self, command):
         self.add_asm(f"# {command}")
-        if command in ["add", "sub", "or", "and"]:
+        if command in ["add", "sub", "or", "and", "sll", "srl", "sra"]:
             self.add_asm(f"lw  x2,-2(x{SP})")
             self.add_asm(f"lw  x3,-1(x{SP})")
             self.add_asm(f"{command} x2,x2,x3")
             self.add_asm(f"sw  x2,-2(x{SP})")
             self.add_asm(f"addi x{SP},x{SP},-1")
-        if command in ["not", "neg"]:
+        elif command in ["not", "neg"]:
             self.add_asm(f"lw  x2,-1(x{SP})")
             self.add_asm(f"{command} x2,x2")
             self.add_asm(f"sw  x2,-1(x{SP})")
-        if command in ["gt", "eq", "lt"]:
+        elif command in ["gt", "eq", "lt"]:
             self.add_asm(f"li  x2,-1") # -1 for true, all ones
             self.add_asm(f"lw  x3,-2(x{SP})")
             self.add_asm(f"lw  x4,-1(x{SP})")
@@ -133,6 +135,8 @@ class CodeWritter:
             self.add_asm(f"li  x2,0")
             self.add_asm(f"sw  x2,-2(x{SP})")
             self.add_asm(f"addi x{SP},x{SP},-1")
+        else:
+            raise Exception(f"VM ERROR: do not know how to process math command '{command}'")
 
     def WritePushPop(self, command, segment, index):
         self.add_asm(f"# {command} {segment} {index}")

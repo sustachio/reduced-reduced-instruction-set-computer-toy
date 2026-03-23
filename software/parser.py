@@ -528,7 +528,7 @@ class Parser:
     def parse_expression(self) -> ASTExpression:
         e = ASTExpression([self.parse_term()], [], 0)
 
-        while self.tokenizer.current_token in ['+', '-', '/', '*', '&', '|', '<', '>', '==']:
+        while self.tokenizer.current_token in ["+", "-", "/", "*", "&", "|", "<", ">", "==", "<<", ">>", ">>>"]:
             op = self.next_token()
             e.ops.append(op)
             e.terms.append(self.parse_term())

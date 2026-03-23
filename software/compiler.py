@@ -266,6 +266,12 @@ class Compiler:
                 self.add_bytecode("lt")
             elif a.ops[i] == "==":
                 self.add_bytecode("eq")
+            elif a.ops[i] == "<<":
+                self.add_bytecode("sll")
+            elif a.ops[i] == ">>":
+                self.add_bytecode("srl")
+            elif a.ops[i] == ">>>":
+                self.add_bytecode("sra")
 
     def compile_int_constant(self, a: ASTIntConstant):
         self.add_bytecode(f"push constant {a.value}")
@@ -347,43 +353,44 @@ class Compiler:
 
     def compile_if_statement(self, a: ASTIfStatement):
         self.add_bytecode(f"\t# IF STATEMENT")
+        if_number = self.if_count
+        self.if_count += 1
 
         self.compile_expression(a.condition)
 
-        self.add_bytecode(f"if-goto ifthen{self.if_count}")
+        self.add_bytecode(f"if-goto ifthen{if_number}")
 
         for aststatement in a.otherwise:
             self.compile_statement(aststatement)
 
-        self.add_bytecode(f"goto ifend{self.if_count}")
+        self.add_bytecode(f"goto ifend{if_number}")
 
-        self.add_bytecode(f"label ifthen{self.if_count}")
+        self.add_bytecode(f"label ifthen{if_number}")
 
         for aststatement in a.then:
             self.compile_statement(aststatement)
 
-        self.add_bytecode(f"label ifend{self.if_count}")
-
-        self.if_count += 1
+        self.add_bytecode(f"label ifend{if_number}")
 
     # NOTE: support for continue/break could be cool
     def compile_while_statement(self, a: ASTWhileStatement):
         self.add_bytecode(f"\t# WHILE STATEMENT")
 
-        self.add_bytecode(f"label while{self.while_count}")
+        while_number = self.while_count
+        self.while_count += 1
+
+        self.add_bytecode(f"label while{while_number}")
 
         self.compile_expression(a.condition)
 
         self.add_bytecode("not")
-        self.add_bytecode(f"if-goto whileend{self.while_count}")
+        self.add_bytecode(f"if-goto whileend{while_number}")
 
         for aststatement in a.do:
             self.compile_statement(aststatement)
 
-        self.add_bytecode(f"goto while{self.while_count}")
-        self.add_bytecode(f"label whileend{self.while_count}")
-
-        self.while_count += 1
+        self.add_bytecode(f"goto while{while_number}")
+        self.add_bytecode(f"label whileend{while_number}")
 
     # NOTE: need to add support for void return statements
     def compile_return_statement(self, a: ASTReturnStatement):
@@ -404,7 +411,7 @@ class Compiler:
             self.add_bytecode("not")
 
 if __name__ == "__main__":
-    with open("programs/basicprogram.rbl") as f:
+    with open("programs/os.rbl") as f:
         a = Compiler(f.read())
         print("VM code:")
         code = a.compile_program()
